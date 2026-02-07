@@ -48,9 +48,13 @@ handleSawSlashState(int c)
     if (c == '*') {
         putchar(' '); /* replace comment with a space */
         commentStartLine = line;   /* record where comment started */
-        state = IN_COMMENT;
+        return IN_COMMENT;
     } 
-    else if (c == '"') {
+    
+    putchar('/'); /* need to print the slash because we didn't in the normal state */
+    putchar(c); /* print the current character since we are not in a comment*/
+
+    if (c == '"') {
         state = IN_STRING;
     }
     else if (c == '\'') {
@@ -59,8 +63,7 @@ handleSawSlashState(int c)
     else {
         state = NORMAL;
     }
-    putchar('/'); /* need to print the slash because we didn't in the normal state */
-    putchar(c); /* print the current character since we are not in a comment*/
+    
     return state;
 }
 
@@ -92,7 +95,7 @@ handleSawStarInCommentState(int c)
         state = SAW_STAR_IN_COMMENT;
     }
     else if (c == '\n') {
-        putchar(c); /* prints a new line*/
+        putchar('\n'); /* prints a new line*/
         state = IN_COMMENT;
     }   
     else {
@@ -155,7 +158,7 @@ int main(void)
     enum Statetype state = NORMAL;
     while ((c = getchar()) != EOF) {
         if (c == '\n') {
-        line++;
+            line++;
         }
 
         switch (state) {
