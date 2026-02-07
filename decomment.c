@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
+
 
 static int line = 1; /* global variable to keep track of what line we are on*/
 static int commentStartLine = 0; /* global variable to keep track of where a comment started, used for error reporting */
@@ -185,7 +187,7 @@ int main(void)
             break;
         }   
     }
-    
+
     /* If the last character is a slash, it's not a comment starter and we need to print it out */
     if (state == SAW_SLASH) {
         putchar('/');
