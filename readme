@@ -3,7 +3,7 @@ Assignment 1 readme File
 ------------------------------------------------------------------------
 What is your name?
 
-
+Brooke Xu
 
 ------------------------------------------------------------------------
 What authorized sources of information did you use to complete the
@@ -11,7 +11,8 @@ assignment? COPY THE LIST of authorized sources of information given
 in the "Policies" web page (also available on armlab in the file
 ~cos217/AuthorizedSourcesList ) to this section of the readme file,
 and edit it as appropriate.
-
+Lecture slides and precept notes
+ChatGPT (LLM)
 
 
 ------------------------------------------------------------------------
@@ -26,7 +27,7 @@ interaction, may additionally require the interaction being reported
 to the Committee on Discipline. Write "None" if you used no
 unauthorized sources of information.
 
-
+None
 
 ------------------------------------------------------------------------
 In fulfillment of the requirement from section 2.4.3 of the Academic
@@ -36,6 +37,7 @@ enter your name in the space below the following affirmation:
 This paper represents my own work in accordance with University
 regulations.
 
+Brooke Xu
 
 
 ------------------------------------------------------------------------
@@ -44,12 +46,18 @@ Regulations in Princeton's Rights, Rules, Responsibilities guide,
 and the COS 217 Generative AI policy, disclose and describe how you
 used AI in completing this assignment:
 
-
+I used AI to help me conceptually understand what a DFA is. I also used
+it to help me translate from a diagram DFA into a text DFA. I also used
+it to help with debugging my code, where I would give it a specific
+file that I was not getting correct and ask it why my code may not be
+working. Lastly, I used it to help me create a copy of my repo on 
+armlab. 
 
 ------------------------------------------------------------------------
 What is your assessment of the assignment? Was it helpful? Was it fun?
 
-
+I think it was helpful and helped me understand DFAs and writing C code
+in general better. 
 
 ------------------------------------------------------------------------
 (optional) What information can you provide about your submission that
