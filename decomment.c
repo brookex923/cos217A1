@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <ctype.h>
 
+static int line = 1; /* global variable to keep track of what line we are on*/
+static int commentStartLine = 0; /* global variable to keep track of where a comment started, used for error reporting */
+
 enum Statetype {
     NORMAL,
     SAW_SLASH,
@@ -41,13 +44,21 @@ handleSawSlashState(int c)
 {
     enum Statetype state;
     if (c == '*') {
+        putchar(' '); /* replace comment with a space */
+        commentStartLine = line;   /* record where comment started */
         state = IN_COMMENT;
     } 
+    else if (c == '"') {
+        state = IN_STRING;
+    }
+    else if (c == '\'') {
+        state = IN_CHAR;
+    }
     else {
-        putchar('/'); /* need to print the slash because we didn't in the normal state */
-        putchar(c);
         state = NORMAL;
     }
+    putchar('/'); /* need to print the slash because we didn't in the normal state */
+    putchar(c); /* print the current character since we are not in a comment*/
     return state;
 }
 
@@ -73,7 +84,6 @@ handleSawStarInCommentState(int c)
 {
     enum Statetype state;
     if (c == '/') {
-        putchar(' '); /* replace the comment with a single space */
         state = NORMAL; /* we are done with the comment, go back to normal*/
     } 
     else if (c == '*') {
@@ -93,6 +103,7 @@ enum Statetype
 handleInStringState(int c)
 {
     enum Statetype state;
+    putchar(c);
     if (c == '\\') {
         state = ESCAPE_IN_STRING; /* need to account for backslashes in strings */
     } 
@@ -116,6 +127,7 @@ enum Statetype
 handleInCharState(int c)
 {
     enum Statetype state;
+    putchar(c);
     if (c == '\\') {
         state = ESCAPE_IN_CHAR; /* need to account for backslashes in chars */
     } 
@@ -140,6 +152,10 @@ int main(void)
     int c;
     enum Statetype state = NORMAL;
     while ((c = getchar()) != EOF) {
+        if (c == '\n') {
+        line++;
+        }
+
         switch (state) {
         case NORMAL:
             state = handleNormalState(c);
@@ -169,16 +185,18 @@ int main(void)
             break;
         }   
     }
+    
     /* If the last character is a slash, it's not a comment starter and we need to print it out */
     if (state == SAW_SLASH) {
         putchar('/');
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     /* Unterminated comment so we need to exit with an error*/
     if (state == IN_COMMENT || state == SAW_STAR_IN_COMMENT) {
-        return 1;
+        fprintf(stderr, "Error: line %d: unterminated comment\n", commentStartLine);
+        return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
