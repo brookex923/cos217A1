@@ -1,0 +1,36 @@
+NORMAL (accept) <-- the start state
+   /:  SAW_SLASH
+   ":  IN_STRING
+   ':  IN_CHAR
+   other:  NORMAL
+
+SAW_SLASH (accept)
+   *:  IN_COMMENT
+   other:  NORMAL
+
+IN_COMMENT (reject)
+   *:  SAW_STAR_IN_COMMENT
+   newline:  IN_COMMENT
+   other:  IN_COMMENT
+
+SAW_STAR_IN_COMMENT (reject)
+   /:  NORMAL
+   *:  SAW_STAR_IN_COMMENT
+   newline:  IN_COMMENT
+   other:  IN_COMMENT
+
+IN_STRING (accept)
+   \:  ESCAPE_IN_STRING
+   ":  NORMAL
+   other:  IN_STRING
+
+ESCAPE_IN_STRING (accept)
+   other:  IN_STRING
+
+IN_CHAR (accept)
+   \:  ESCAPE_IN_CHAR
+   ':  NORMAL
+   other:  IN_CHAR
+
+ESCAPE_IN_CHAR (accept)
+   other:  IN_CHAR
