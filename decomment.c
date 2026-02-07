@@ -50,7 +50,7 @@ handleSawSlashState(int c)
         commentStartLine = line;   /* record where comment started */
         return IN_COMMENT;
     } 
-    
+
     putchar('/'); /* need to print the slash because we didn't in the normal state */
     putchar(c); /* print the current character since we are not in a comment*/
 
@@ -59,6 +59,9 @@ handleSawSlashState(int c)
     }
     else if (c == '\'') {
         state = IN_CHAR;
+    }
+    else if (c == '/') {
+        state = SAW_SLASH; /* we might have another comment starting, so stay in the saw slash state */
     }
     else {
         state = NORMAL;
