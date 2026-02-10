@@ -1,121 +1,41 @@
 NORMAL (accept) <-- the start state
-   /:  SAW_SLASH
-   ":  IN_STRING
-   ':  IN_CHAR
-   other:  NORMAL
+   /:  SAW_SLASH (Action: None, do not print / yet)
+   ":  IN_STRING (Action: print ")
+   ':  IN_CHAR (Action: print ')
+   other:  NORMAL (Action: print char)
 
 SAW_SLASH (accept)
-   *:  IN_COMMENT
-   other:  NORMAL
+   *:  IN_COMMENT (Action: print ' ')
+   /:  SAW_SLASH (Action: print '/')
+   ":  IN_STRING (Action: print '/', then print ")
+   ':  IN_CHAR (Action: print '/', then print ')
+   other:  NORMAL (Action: print '/', then print char)
 
 IN_COMMENT (reject)
-   *:  SAW_STAR_IN_COMMENT
-   newline:  IN_COMMENT
-   other:  IN_COMMENT
+   *:  SAW_STAR_IN_COMMENT (Action: none)
+   newline:  IN_COMMENT (Action: print newline)
+   other:  IN_COMMENT (Action: none)
 
 SAW_STAR_IN_COMMENT (reject)
-   /:  NORMAL
-   *:  SAW_STAR_IN_COMMENT
-   newline:  IN_COMMENT
-   other:  IN_COMMENT
+   /:  NORMAL (Action: none)
+   *:  SAW_STAR_IN_COMMENT (Action: none)
+   newline:  IN_COMMENT (Action: print newline)
+   other:  IN_COMMENT (Action: none)
 
 IN_STRING (accept)
-   \:  ESCAPE_IN_STRING
-   ":  NORMAL
-   other:  IN_STRING
+   \:  ESCAPE_IN_STRING (Action: print \)
+   ":  NORMAL (Action: print ")
+   other:  IN_STRING (Action: print char)
 
 ESCAPE_IN_STRING (accept)
-   other:  IN_STRING
+   other:  IN_STRING (Action: print char)
 
 IN_CHAR (accept)
-   \:  ESCAPE_IN_CHAR
-   ':  NORMAL
-   other:  IN_CHAR
+   \:  ESCAPE_IN_CHAR (Action: print \)
+   ':  NORMAL (Action: print ')
+   other:  IN_CHAR (Action: print char)
 
 ESCAPE_IN_CHAR (accept)
-   other:  IN_CHAR
+   other:  IN_CHAR (Action: print char)
 
 
-========================================================================
-decomment DFA (COS 217 A1) - TextualDFA format
-========================================================================
-
-Legend / character sets used on transitions:
-
-/        the slash character
-*        the star character
-"        double quote
-'        single quote
-\        backslash
-newline  the '\n' character
-EOF      end-of-file (special handling, not a normal input character)
-
-other    any character not matched by another transition in that state
-         (may include '/', '*', '"', ''', '\', or newline only if not
-         already listed explicitly in that state)
-
-Actions (informal, implemented in C, not part of pure DFA):
-- NORMAL prints characters as read (except when forming /* ... */).
-- On recognizing "/*" (i.e., in SAW_SLASH reading '*'):
-    print one space, record commentStartLine, then suppress comment chars
-    but print any newline characters inside the comment.
-- Inside strings/chars, print everything exactly as read; handle escapes
-  so \" does not end a string and \' does not end a char.
-- If EOF occurs before closing a comment, print:
-    Error: line X: unterminated comment
-  where X is commentStartLine, and exit failure.
-
-------------------------------------------------------------------------
-States (accept/reject notion not used for this filter program)
-------------------------------------------------------------------------
-
-NORMAL  <-- the start state
-   /:        SAW_SLASH
-   ":        IN_STRING
-   ':        IN_CHAR
-   other:    NORMAL
-
-SAW_SLASH
-   *:        IN_COMMENT
-   other:    NORMAL
-
-IN_COMMENT
-   *:        SAW_STAR_IN_COMMENT
-   newline:  IN_COMMENT
-   other:    IN_COMMENT
-
-SAW_STAR_IN_COMMENT
-   /:        NORMAL
-   *:        SAW_STAR_IN_COMMENT
-   newline:  IN_COMMENT
-   other:    IN_COMMENT
-
-IN_STRING
-   \:        ESCAPE_IN_STRING
-   ":        NORMAL
-   other:    IN_STRING
-
-ESCAPE_IN_STRING
-   other:    IN_STRING
-
-IN_CHAR
-   \:        ESCAPE_IN_CHAR
-   ':        NORMAL
-   other:    IN_CHAR
-
-ESCAPE_IN_CHAR
-   other:    IN_CHAR
-
-------------------------------------------------------------------------
-EOF handling (special cases)
-------------------------------------------------------------------------
-
-If EOF occurs in SAW_SLASH:
-   output '/' and terminate successfully.
-
-If EOF occurs in IN_COMMENT or SAW_STAR_IN_COMMENT:
-   error "Error: line commentStartLine: unterminated comment"
-   and terminate with failure.
-
-If EOF occurs in any other state:
-   terminate successfully.
